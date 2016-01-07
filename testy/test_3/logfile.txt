@@ -1,0 +1,78 @@
+		 Dziennik zdarzeń programu ScannerPC	22:48:58		5.11.2015
+
+Opis błędów: 
+
+l:	log			-	informacje które służą jedynie do oceny pracy programu
+w:	warning		-	ostrzeżenie, informacja o problemie
+r:	receivedError	-	błąd, problem otrzymany z UsbPort lub TcpClient
+i:	internalError	-	błąd, problem wewnątrz klasy Qt
+c:	criticalError	-	błąd, który bezpośrednio wpływa na pracę programu
+
+
+22:48:58	i	UsbPort	0
+22:48:58	l	UsbPort	Nawiązano połączenie
+22:49:11	l	ControlPanel	Skanowanie rozpoczęte, zrobiono pierwsze zdjęcie
+22:49:11	l	ControlPanel	Skanowanie w toku: 2 / 64
+22:49:12	l	ControlPanel	Skanowanie w toku: 3 / 64
+22:49:12	l	ControlPanel	Skanowanie w toku: 4 / 64
+22:49:12	l	ControlPanel	Skanowanie w toku: 5 / 64
+22:49:13	l	ControlPanel	Skanowanie w toku: 6 / 64
+22:49:13	l	ControlPanel	Skanowanie w toku: 7 / 64
+22:49:13	l	ControlPanel	Skanowanie w toku: 8 / 64
+22:49:14	l	ControlPanel	Skanowanie w toku: 9 / 64
+22:49:14	l	ControlPanel	Skanowanie w toku: 10 / 64
+22:49:14	l	ControlPanel	Skanowanie w toku: 11 / 64
+22:49:15	l	ControlPanel	Skanowanie w toku: 12 / 64
+22:49:15	l	ControlPanel	Skanowanie w toku: 13 / 64
+22:49:15	l	ControlPanel	Skanowanie w toku: 14 / 64
+22:49:16	l	ControlPanel	Skanowanie w toku: 15 / 64
+22:49:16	l	ControlPanel	Skanowanie w toku: 16 / 64
+22:49:16	l	ControlPanel	Skanowanie w toku: 17 / 64
+22:49:17	l	ControlPanel	Skanowanie w toku: 18 / 64
+22:49:17	l	ControlPanel	Skanowanie w toku: 19 / 64
+22:49:18	l	ControlPanel	Skanowanie w toku: 20 / 64
+22:49:18	l	ControlPanel	Skanowanie w toku: 21 / 64
+22:49:18	l	ControlPanel	Skanowanie w toku: 22 / 64
+22:49:19	l	ControlPanel	Skanowanie w toku: 23 / 64
+22:49:19	l	ControlPanel	Skanowanie w toku: 24 / 64
+22:49:19	l	ControlPanel	Skanowanie w toku: 25 / 64
+22:49:20	l	ControlPanel	Skanowanie w toku: 26 / 64
+22:49:20	l	ControlPanel	Skanowanie w toku: 27 / 64
+22:49:20	l	ControlPanel	Skanowanie w toku: 28 / 64
+22:49:21	l	ControlPanel	Skanowanie w toku: 29 / 64
+22:49:21	l	ControlPanel	Skanowanie w toku: 30 / 64
+22:49:21	l	ControlPanel	Skanowanie w toku: 31 / 64
+22:49:22	l	ControlPanel	Skanowanie w toku: 32 / 64
+22:49:22	l	ControlPanel	Skanowanie w toku: 33 / 64
+22:49:22	l	ControlPanel	Skanowanie w toku: 34 / 64
+22:49:23	l	ControlPanel	Skanowanie w toku: 35 / 64
+22:49:23	l	ControlPanel	Skanowanie w toku: 36 / 64
+22:49:23	l	ControlPanel	Skanowanie w toku: 37 / 64
+22:49:24	l	ControlPanel	Skanowanie w toku: 38 / 64
+22:49:24	l	ControlPanel	Skanowanie w toku: 39 / 64
+22:49:25	l	ControlPanel	Skanowanie w toku: 40 / 64
+22:49:25	l	ControlPanel	Skanowanie w toku: 41 / 64
+22:49:25	l	ControlPanel	Skanowanie w toku: 42 / 64
+22:49:26	l	ControlPanel	Skanowanie w toku: 43 / 64
+22:49:26	l	ControlPanel	Skanowanie w toku: 44 / 64
+22:49:26	l	ControlPanel	Skanowanie w toku: 45 / 64
+22:49:27	l	ControlPanel	Skanowanie w toku: 46 / 64
+22:49:27	l	ControlPanel	Skanowanie w toku: 47 / 64
+22:49:27	l	ControlPanel	Skanowanie w toku: 48 / 64
+22:49:28	l	ControlPanel	Skanowanie w toku: 49 / 64
+22:49:28	l	ControlPanel	Skanowanie w toku: 50 / 64
+22:49:28	l	ControlPanel	Skanowanie w toku: 51 / 64
+22:49:29	l	ControlPanel	Skanowanie w toku: 52 / 64
+22:49:29	l	ControlPanel	Skanowanie w toku: 53 / 64
+22:49:29	l	ControlPanel	Skanowanie w toku: 54 / 64
+22:49:30	l	ControlPanel	Skanowanie w toku: 55 / 64
+22:49:30	l	ControlPanel	Skanowanie w toku: 56 / 64
+22:49:30	l	ControlPanel	Skanowanie w toku: 57 / 64
+22:49:31	l	ControlPanel	Skanowanie w toku: 58 / 64
+22:49:31	l	ControlPanel	Skanowanie w toku: 59 / 64
+22:49:32	l	ControlPanel	Skanowanie w toku: 60 / 64
+22:49:32	l	ControlPanel	Skanowanie w toku: 61 / 64
+22:49:32	l	ControlPanel	Skanowanie w toku: 62 / 64
+22:49:33	l	ControlPanel	Skanowanie w toku: 63 / 64
+22:49:33	l	ControlPanel	Skanowanie w toku: 64 / 64
+22:49:45	l	ControlPanel	Skanowanie zakończone
