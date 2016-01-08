@@ -2,15 +2,9 @@
 #define SCENE_H
 
 #include <QOpenGLWidget>
-#include <QOpenGLBuffer>
-#include <QOpenGLFunctions>
-#include <QOpenGLShader>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLVertexArrayObject>
 
 #include <QVector>
 #include <QVector3D>
-#include <QMatrix4x4>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QKeyEvent>
@@ -20,10 +14,15 @@
 #include <QtMath>
 #include <QDir>
 
+#include "model.h"
+#include "skeleton.h"
+
 #include "Eye/eye.h"
 #include "rendermode.h"
+
 #include "TcpServer/photogram.h"
 #include "DataProcessor/messagetype.h"
+
 #include "SetPointProcessing.h"
 #include "PoissonSurfaceReconstructrion.h"
 
@@ -66,20 +65,16 @@ protected:
 private:
     Ui::Scene *ui;
 
-    QOpenGLBuffer *axisVBO      {new QOpenGLBuffer(QOpenGLBuffer::Type::VertexBuffer)};
     QOpenGLBuffer *modelVBO     {new QOpenGLBuffer(QOpenGLBuffer::Type::VertexBuffer)};
     QOpenGLBuffer *modelIBO     {new QOpenGLBuffer(QOpenGLBuffer::Type::IndexBuffer)};
     QOpenGLBuffer *skeletonVBO  {new QOpenGLBuffer(QOpenGLBuffer::Type::VertexBuffer)};
 
-    QOpenGLVertexArrayObject *axisVAO       {new QOpenGLVertexArrayObject};
     QOpenGLVertexArrayObject *modelVAO      {new QOpenGLVertexArrayObject};
     QOpenGLVertexArrayObject *skeletonVAO   {new QOpenGLVertexArrayObject};
 
-    QOpenGLShaderProgram *axisShader        {new QOpenGLShaderProgram};
     QOpenGLShaderProgram *modelShader       {new QOpenGLShaderProgram};
     QOpenGLShaderProgram *skeletonShader    {new QOpenGLShaderProgram};
 
-    QVector<QVector3D>      axisVertices    {};
     QVector<QVector3D>      modelVertices   {};
     QVector<unsigned int>   modelIndices    {};
     std::vector<QVector3D>  skeletonVertices{};
@@ -91,15 +86,12 @@ private:
     QMatrix4x4 mvpMatrix        {};
     QMatrix3x3 normalMatrix     {};
 
-    const QString shadersPath   {QDir::currentPath()+"/../../shaders"};
+    const QString shadersPath   {QDir::currentPath()+"/../../shaders/"};
 
     RenderMode renderMode       {RenderMode::axisAndSkeleton};
 
     Eye eye;
-
-    void initializeAxisShader();
-    void initializeAxis();
-    void paintAxis();
+    Model model{this};
 
     void initializeModelShader();
     void initializeModel();

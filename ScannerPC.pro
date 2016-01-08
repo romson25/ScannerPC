@@ -18,7 +18,10 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     controlpanel.cpp \
     scene.cpp \
-    Eye/eye.cpp
+    Eye/eye.cpp \
+    model.cpp \
+    skeleton.cpp \
+    axis.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \
@@ -27,7 +30,11 @@ HEADERS  += mainwindow.h \
     guimode.h \
     Eye/distance.h \
     Eye/eye.h \
-    Eye/direction.h
+    Eye/direction.h \
+    renderobject.h \
+    model.h \
+    skeleton.h \
+    axis.h
 
 FORMS    += mainwindow.ui \
     controlpanel.ui \

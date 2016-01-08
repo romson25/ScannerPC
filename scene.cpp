@@ -59,8 +59,9 @@ void Scene::initializeGL    ()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
-    initializeAxis();
-    initializeAxisShader();
+//    initializeAxis();
+//    initializeAxisShader();
+    model.init(shadersPath+"vertexaxis.vert", shadersPath+"fragmentaxis.frag");
 
     initializeModel();
     initializeModelShader();
@@ -78,16 +79,17 @@ void Scene::paintGL         ()
     mvpMatrix        = projectionMatrix * modelViewMatrix;
     normalMatrix     = modelViewMatrix.normalMatrix();
 
-    switch (renderMode) {
+    switch (renderMode)
+    {
     case RenderMode::axis:
-        paintAxis();
+        model.paint(mvpMatrix);
         break;
     case RenderMode::axisAndModel:
-        paintAxis();
+        model.paint(mvpMatrix);
         paintModel();
         break;
     case RenderMode::axisAndSkeleton:
-        paintAxis();
+        model.paint(mvpMatrix);
         paintSkeleton();
         break;
     default:
@@ -146,59 +148,6 @@ void Scene::keyPressEvent   (QKeyEvent *event)
     update();
 }
 
-void Scene::initializeAxisShader    ()
-{
-    axisShader->create();
-    axisShader->addShaderFromSourceFile(QOpenGLShader::Vertex,      shadersPath + "/vertexaxis.vert");
-    axisShader->addShaderFromSourceFile(QOpenGLShader::Fragment,    shadersPath + "/fragmentaxis.frag");
-    axisShader->bindAttributeLocation("position",   0);
-    axisShader->bindAttributeLocation("color",      1);
-    axisShader->link();
-    axisShader->bind();
-}
-void Scene::initializeAxis          ()
-{
-    axisVertices.push_back(QVector3D{ 0, 0, 0});
-    axisVertices.push_back(QVector3D{ 1, 0, 0});
-    axisVertices.push_back(QVector3D{10, 0, 0});
-    axisVertices.push_back(QVector3D{ 1, 0, 0});
-    axisVertices.push_back(QVector3D{ 0, 0, 0});
-    axisVertices.push_back(QVector3D{ 0, 1, 0});
-    axisVertices.push_back(QVector3D{ 0,10, 0});
-    axisVertices.push_back(QVector3D{ 0, 1, 0});
-    axisVertices.push_back(QVector3D{ 0, 0, 0});
-    axisVertices.push_back(QVector3D{ 0, 0, 1});
-    axisVertices.push_back(QVector3D{ 0, 0,10});
-    axisVertices.push_back(QVector3D{ 0, 0, 1});
-
-    axisVAO->create();
-    axisVAO->bind();
-
-    axisVBO->create();
-    axisVBO->bind();
-    axisVBO->allocate(axisVertices.data(), axisVertices.length()*sizeof(QVector3D));
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), 0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<void *>(3 * sizeof(GLfloat)));
-
-    axisVBO->release();
-    axisVAO->release();
-}
-void Scene::paintAxis               ()
-{
-    axisVAO->bind();
-    axisShader->bind();
-
-    axisShader->setUniformValue("mvp", mvpMatrix);
-
-    glDrawArrays(GL_LINES, 0, axisVertices.length());
-
-    axisShader->release();
-    axisVAO->release();
-}
-
 void Scene::initializeModelShader   ()
 {
      modelShader->create();
@@ -242,42 +191,6 @@ void Scene::paintModel              ()
     modelShader->release();
     modelVBO->release();
     modelVAO->release();
-}
-
-void Scene::initializeSkeletonShader()
-{
-    skeletonShader->create();
-    skeletonShader->addShaderFromSourceFile(QOpenGLShader::Vertex,    shadersPath + "/vertexskeleton.vert");
-    skeletonShader->addShaderFromSourceFile(QOpenGLShader::Fragment,  shadersPath + "/fragmentskeleton.frag");
-    skeletonShader->bindAttributeLocation("position", 0);
-    skeletonShader->link();
-    skeletonShader->bind();
-}
-void Scene::initializeSkeleton      ()
-{
-    skeletonVAO->create();
-    skeletonVAO->bind();
-
-    skeletonVBO->create();
-    skeletonVBO->bind();
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), 0);
-
-    skeletonVBO->release();
-    skeletonVAO->release();
-}
-void Scene::paintSkeleton           ()
-{
-    skeletonVAO->bind();
-    skeletonShader->bind();
-
-    skeletonShader->setUniformValue("mvp", mvpMatrix);
-
-    glDrawArrays(GL_POINTS, 0, skeletonVertices.size());
-
-    skeletonShader->release();
-    skeletonVAO->release();
 }
 
 void Scene::loadModelFromFile       (QString path)
