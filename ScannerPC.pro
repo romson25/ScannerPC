@@ -13,6 +13,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET   = ScannerPC
 TEMPLATE = app
 CONFIG  += c++11
+#bububaba
 
 
 SOURCES += main.cpp\
