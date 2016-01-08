@@ -75,25 +75,25 @@ private:
     QOpenGLVertexArrayObject *modelVAO      {new QOpenGLVertexArrayObject};
     QOpenGLVertexArrayObject *skeletonVAO   {new QOpenGLVertexArrayObject};
 
-    QOpenGLShaderProgram *axisShader     {new QOpenGLShaderProgram};
-    QOpenGLShaderProgram *modelShader    {new QOpenGLShaderProgram};
-    QOpenGLShaderProgram *skeletonShader {new QOpenGLShaderProgram};
+    QOpenGLShaderProgram *axisShader        {new QOpenGLShaderProgram};
+    QOpenGLShaderProgram *modelShader       {new QOpenGLShaderProgram};
+    QOpenGLShaderProgram *skeletonShader    {new QOpenGLShaderProgram};
 
     QVector<QVector3D>      axisVertices    {};
     QVector<QVector3D>      modelVertices   {};
     QVector<unsigned int>   modelIndices    {};
     std::vector<QVector3D>  skeletonVertices{};
 
-    QMatrix4x4 modelMatrix      {}; //--macierze są domyślnie ustawione jako jednostkowe
+    QMatrix4x4 modelMatrix      {};
     QMatrix4x4 projectionMatrix {};
 
     QMatrix4x4 modelViewMatrix  {};
     QMatrix4x4 mvpMatrix        {};
     QMatrix3x3 normalMatrix     {};
 
-    const QString shadersPath { QDir::currentPath()+"/../../shaders" };
+    const QString shadersPath   {QDir::currentPath()+"/../../shaders"};
 
-    RenderMode renderMode{RenderMode::axisAndSkeleton};
+    RenderMode renderMode       {RenderMode::axisAndSkeleton};
 
     Eye eye;
 

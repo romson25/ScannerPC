@@ -13,8 +13,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET   = ScannerPC
 TEMPLATE = app
 CONFIG  += c++11
-#bububaba
-
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -58,7 +56,6 @@ LIBS += -L/usr/include/eigen3/eigen
 
 QMAKE_CXXFLAGS += -frounding-math -O3
 
-#INCLUDEPATH += /home/adam/Downloads/cgal-master/Installation/cmake/modules
 INCLUDEPATH += /home/adam/Pobrane/cgal-master/Installation/cmake/modules
 
 DISTFILES += \
