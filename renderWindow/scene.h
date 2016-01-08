@@ -14,10 +14,11 @@
 #include <QtMath>
 #include <QDir>
 
-#include "model.h"
-#include "skeleton.h"
+#include "renderObject/axis/axis.h"
+#include "renderObject/model/model.h"
+#include "renderObject/skeleton/skeleton.h"
 
-#include "Eye/eye.h"
+#include "eye/eye.h"
 #include "rendermode.h"
 
 #include "TcpServer/photogram.h"
@@ -65,19 +66,10 @@ protected:
 private:
     Ui::Scene *ui;
 
-    QOpenGLBuffer *modelVBO     {new QOpenGLBuffer(QOpenGLBuffer::Type::VertexBuffer)};
-    QOpenGLBuffer *modelIBO     {new QOpenGLBuffer(QOpenGLBuffer::Type::IndexBuffer)};
-    QOpenGLBuffer *skeletonVBO  {new QOpenGLBuffer(QOpenGLBuffer::Type::VertexBuffer)};
-
-    QOpenGLVertexArrayObject *modelVAO      {new QOpenGLVertexArrayObject};
-    QOpenGLVertexArrayObject *skeletonVAO   {new QOpenGLVertexArrayObject};
-
-    QOpenGLShaderProgram *modelShader       {new QOpenGLShaderProgram};
-    QOpenGLShaderProgram *skeletonShader    {new QOpenGLShaderProgram};
-
-    QVector<QVector3D>      modelVertices   {};
-    QVector<unsigned int>   modelIndices    {};
-    std::vector<QVector3D>  skeletonVertices{};
+    Eye eye;
+    Axis        axis    {this};
+    Model       model   {this};
+    Skeleton    skeleton{this};
 
     QMatrix4x4 modelMatrix      {};
     QMatrix4x4 projectionMatrix {};
@@ -86,20 +78,9 @@ private:
     QMatrix4x4 mvpMatrix        {};
     QMatrix3x3 normalMatrix     {};
 
-    const QString shadersPath   {QDir::currentPath()+"/../../shaders/"};
+    const QString shadersPath   {QDir::currentPath()+"/../../renderWindow/renderObject"};
 
     RenderMode renderMode       {RenderMode::axisAndSkeleton};
-
-    Eye eye;
-    Model model{this};
-
-    void initializeModelShader();
-    void initializeModel();
-    void paintModel();
-
-    void initializeSkeletonShader();
-    void initializeSkeleton();
-    void paintSkeleton();
 
     void loadModelFromFile      (QString path);
     void loadVerticesAndNormals (aiMesh* mesh);

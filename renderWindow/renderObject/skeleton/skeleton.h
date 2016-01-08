@@ -1,21 +1,25 @@
-#ifndef AXIS_H
-#define AXIS_H
+#ifndef SKELETON_H
+#define SKELETON_H
 
 #include <QObject>
-#include <renderobject.h>
+#include "../irenderobject.h"
 
-class Axis : public QObject, public IRenderObject
+class Skeleton : public QObject, public IRenderObject
 {
     Q_OBJECT
     Q_INTERFACES(IRenderObject)
 public:
-    explicit Axis(QOpenGLFunctions* f);
-    ~Axis(){}
+    explicit Skeleton(QOpenGLFunctions* f);
+    ~Skeleton(){}
 
     void init   (QString vertexShaderPath, QString fragemntShaderPath);
     void paint  (const QMatrix4x4& mvpMatrix,
                  const QMatrix4x4& modelViewMatrix  = QMatrix4x4(),
                  const QMatrix3x3& normalMatrix     = QMatrix3x3() );
+
+        void addVertices(std::vector<QVector3D>& vertices);
+        void clear      ();
+        const QVector<QVector3D>&  getVertices();
 
 private:
     void initObject ();
@@ -25,4 +29,4 @@ private:
     QOpenGLFunctions* f;
 };
 
-#endif // AXIS_H
+#endif // SKELETON_H

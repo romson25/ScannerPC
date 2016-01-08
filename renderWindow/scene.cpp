@@ -20,6 +20,7 @@ void Scene::scanningStarted     ()
 void Scene::scanningFinished    ()
 {
     renderMode = RenderMode::axisAndModel;
+
     QString path = "model.xyz";
     writeSkeleton(path);
 
@@ -32,13 +33,8 @@ void Scene::scanningFinished    ()
 }
 void Scene::nextScan            (Photogram &p)
 {
-    std::move(p.getVertices().begin(), p.getVertices().end(), std::back_inserter(skeletonVertices));
-    skeletonVBO->bind();
-    glBufferData(GL_ARRAY_BUFFER, skeletonVertices.size()*sizeof(QVector3D), skeletonVertices.data(), GL_STATIC_DRAW);
-    skeletonVBO->release();
-
+    skeleton.addVertices( p.getVertices() );
     emit removeOldestPhotogram();
-
     update();
 }
 void Scene::renderModelFromFile (QString path)
@@ -59,15 +55,9 @@ void Scene::initializeGL    ()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
-//    initializeAxis();
-//    initializeAxisShader();
-    model.init(shadersPath+"vertexaxis.vert", shadersPath+"fragmentaxis.frag");
-
-    initializeModel();
-    initializeModelShader();
-
-    initializeSkeleton();
-    initializeSkeletonShader();
+    axis.init       (shadersPath+"/axis/vertexaxis.vert",           shadersPath+"/axis/fragmentaxis.frag"           );
+    model.init      (shadersPath+"/model/vertexmodel.vert",         shadersPath+"/model/fragmentmodel.frag"         );
+    skeleton.init   (shadersPath+"/skeleton/vertexskeleton.vert",   shadersPath+"/skeleton/fragmentskeleton.frag"   );
 
     update();
 }
@@ -82,15 +72,15 @@ void Scene::paintGL         ()
     switch (renderMode)
     {
     case RenderMode::axis:
-        model.paint(mvpMatrix);
+        axis.paint(mvpMatrix);
         break;
     case RenderMode::axisAndModel:
-        model.paint(mvpMatrix);
-        paintModel();
+        axis.paint(mvpMatrix);
+        model.paint(mvpMatrix, modelViewMatrix, normalMatrix);
         break;
     case RenderMode::axisAndSkeleton:
-        model.paint(mvpMatrix);
-        paintSkeleton();
+        axis.paint(mvpMatrix);
+        skeleton.paint(mvpMatrix);
         break;
     default:
         break;
@@ -148,51 +138,6 @@ void Scene::keyPressEvent   (QKeyEvent *event)
     update();
 }
 
-void Scene::initializeModelShader   ()
-{
-     modelShader->create();
-     modelShader->addShaderFromSourceFile(QOpenGLShader::Vertex,    shadersPath + "/vertexmodel.vert");
-     modelShader->addShaderFromSourceFile(QOpenGLShader::Fragment,  shadersPath + "/fragmentmodel.frag");
-     modelShader->bindAttributeLocation("position", 0);
-     modelShader->bindAttributeLocation("normal",   1);
-     modelShader->link();
-     modelShader->bind();
-}
-void Scene::initializeModel         ()
-{
-    modelVAO->create();
-    modelVAO->bind();
-
-    modelVBO->create();
-    modelIBO->create();
-
-    modelVAO->release();
-}
-void Scene::paintModel              ()
-{
-    modelVAO->bind();
-    modelVBO->bind();
-    modelShader->bind();
-
-    modelShader->setUniformValue("modelViewMatrix", modelViewMatrix);
-    modelShader->setUniformValue("mvp",             mvpMatrix);
-    modelShader->setUniformValue("normalMatrix",    normalMatrix);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), 0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GL_FLOAT), reinterpret_cast<void *>(3*sizeof(GL_FLOAT)));
-    glEnableVertexAttribArray(1);
-
-    modelIBO->bind();
-    glDrawElements(GL_TRIANGLES, modelIndices.length(), GL_UNSIGNED_INT, 0);
-
-    modelIBO->release();
-    modelShader->release();
-    modelVBO->release();
-    modelVAO->release();
-}
-
 void Scene::loadModelFromFile       (QString path)
 {
     Assimp::Importer importer;
@@ -234,13 +179,10 @@ void Scene::loadVerticesAndNormals  (aiMesh *mesh)
         float yN = normal.y;
         float zN = normal.z;
 
-        modelVertices.push_back(QVector3D(xV, yV, zV));
-        modelVertices.push_back(QVector3D(xN, yN, zN));
+        model.addVertices(QVector3D(xV, yV, zV), QVector3D(xN, yN, zN));
     }
 
-    modelVBO->bind();
-    glBufferData(GL_ARRAY_BUFFER, modelVertices.size()*sizeof(QVector3D), modelVertices.data(), GL_STATIC_DRAW);
-    modelVBO->release();
+    model.refreshVertices();
 }
 void Scene::loadIndices             (aiMesh *mesh)
 {
@@ -260,24 +202,20 @@ void Scene::loadIndices             (aiMesh *mesh)
         unsigned int index2 = face.mIndices[1];
         unsigned int index3 = face.mIndices[2];
 
-        modelIndices.push_back(index1);
-        modelIndices.push_back(index2);
-        modelIndices.push_back(index3);
+        model.addIndex(index1);
+        model.addIndex(index2);
+        model.addIndex(index3);
     }
-
-    modelIBO->bind();
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, modelIndices.length()*sizeof(unsigned int), modelIndices.data(), GL_STATIC_DRAW);
-    modelIBO->release();
+    model.refreshIndices();
 }
 
 void Scene::clearPreviousModel      ()
 {
-    modelIndices.clear();
-    modelVertices.clear();
+    model.clear();
 }
 void Scene::clearPreviousSkeleton   ()
 {
-    skeletonVertices.clear();
+    skeleton.clear();
 }
 
 void Scene::writeSkeleton           (QString path)
@@ -291,16 +229,15 @@ void Scene::writeSkeleton           (QString path)
 
     QTextStream stream(&file);
 
-    for(unsigned int i = 0; i<skeletonVertices.size(); i++)
+    foreach (QVector3D v, skeleton.getVertices())
     {
-        QVector3D v = skeletonVertices.at(i);
-
         QByteArray x = QByteArray::number(v.x());
         QByteArray y = QByteArray::number(v.y());
         QByteArray z = QByteArray::number(v.z());
 
         stream<<x+" "+y+" "+z+"\n";
     }
+
     file.flush();
     file.close();
 }

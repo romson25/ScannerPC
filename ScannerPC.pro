@@ -16,29 +16,30 @@ CONFIG  += c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    controlpanel.cpp \
-    scene.cpp \
-    Eye/eye.cpp \
-    model.cpp \
-    skeleton.cpp \
-    axis.cpp
+    controlPanel/controlpanel.cpp \
+    renderWindow/eye/eye.cpp \
+    renderWindow/renderObject/axis/axis.cpp \
+    renderWindow/renderObject/model/model.cpp \
+    renderWindow/renderObject/skeleton/skeleton.cpp \
+    renderWindow/scene.cpp
 
 HEADERS  += mainwindow.h \
-    controlpanel.h \
-    scene.h \
-    rendermode.h \
-    guimode.h \
-    Eye/distance.h \
-    Eye/eye.h \
-    Eye/direction.h \
-    renderobject.h \
-    model.h \
-    skeleton.h \
-    axis.h
+    controlPanel/controlpanel.h \
+    renderWindow/eye/direction.h \
+    renderWindow/eye/distance.h \
+    renderWindow/eye/eye.h \
+    renderWindow/renderObject/axis/axis.h \
+    renderWindow/renderObject/model/model.h \
+    renderWindow/renderObject/skeleton/skeleton.h \
+    renderWindow/renderObject/irenderobject.h \
+    renderWindow/guimode.h \
+    renderWindow/rendermode.h \
+    renderWindow/scene.h \
+    controlPanel/guimode.h
 
 FORMS    += mainwindow.ui \
-    controlpanel.ui \
-    scene.ui
+    controlPanel/controlpanel.ui \
+    renderWindow/scene.ui
 
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib
@@ -65,13 +66,13 @@ QMAKE_CXXFLAGS += -frounding-math -O3
 
 INCLUDEPATH += /home/adam/Pobrane/cgal-master/Installation/cmake/modules
 
-DISTFILES += \
-    shaders/fragmentaxis.frag \
-    shaders/vertexaxis.vert \
-    shaders/fragmentmodel.frag \
-    shaders/vertexmodel.vert \
-    shaders/vertexskeleton.vert \
-    shaders/fragmentskeleton.frag
+#DISTFILES += \
+#    shaders/fragmentaxis.frag \
+#    shaders/vertexaxis.vert \
+#    shaders/fragmentmodel.frag \
+#    shaders/vertexmodel.vert \
+#    shaders/vertexskeleton.vert \
+#    shaders/fragmentskeleton.frag
 
 
 #--LOAD bruceCL

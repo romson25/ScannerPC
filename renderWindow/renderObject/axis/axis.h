@@ -1,22 +1,21 @@
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef AXIS_H
+#define AXIS_H
 
 #include <QObject>
-#include "renderobject.h"
+#include "../irenderobject.h"
 
-class Model : public QObject, public IRenderObject
+class Axis : public QObject, public IRenderObject
 {
     Q_OBJECT
     Q_INTERFACES(IRenderObject)
-
 public:
-    explicit Model(QOpenGLFunctions* f);
-    ~Model(){}
+    explicit Axis(QOpenGLFunctions* f);
+    ~Axis(){}
 
     void init   (QString vertexShaderPath, QString fragemntShaderPath);
     void paint  (const QMatrix4x4& mvpMatrix,
-                 const QMatrix4x4& modelViewMatrix = QMatrix4x4(),
-                 const QMatrix3x3& normalMatrix = QMatrix3x3() );
+                 const QMatrix4x4& modelViewMatrix  = QMatrix4x4(),
+                 const QMatrix3x3& normalMatrix     = QMatrix3x3() );
 
 private:
     void initObject ();
@@ -26,4 +25,4 @@ private:
     QOpenGLFunctions* f;
 };
 
-#endif // MODEL_H
+#endif // AXIS_H

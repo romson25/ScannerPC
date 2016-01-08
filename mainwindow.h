@@ -9,6 +9,9 @@
 #include <TcpServer/tcpserver.h>
 #include <UsbPort/usbport.h>
 
+#include "controlPanel/controlpanel.h"
+#include "renderWindow/scene.h"
+
 namespace Ui {
 class MainWindow;
 }

@@ -1,16 +1,17 @@
-#include "skeleton.h"
+//#include "skeleton.h"
+#include "../skeleton/skeleton.h"
 
-skeleton::skeleton(QOpenGLFunctions* function) : f{function}
+Skeleton::Skeleton(QOpenGLFunctions* function) : f{function}
 {}
 
-void skeleton::init (QString vertexShaderPath,
+void Skeleton::init (QString vertexShaderPath,
                      QString fragemntShaderPath)
 {
     initShader(vertexShaderPath, fragemntShaderPath);
     initObject();
 }
 
-void skeleton::paint(const QMatrix4x4 &mvpMatrix,
+void Skeleton::paint(const QMatrix4x4 &mvpMatrix,
                      const QMatrix4x4 &,
                      const QMatrix3x3 &)
 {
@@ -25,8 +26,23 @@ void skeleton::paint(const QMatrix4x4 &mvpMatrix,
     vao.release();
 }
 
+void Skeleton::addVertices(std::vector<QVector3D> &nextVertices)
+{
+    std::move(nextVertices.begin(), nextVertices.end(), std::back_inserter(vertices));
+    vbo.bind();
+    f->glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(QVector3D), vertices.data(), GL_STATIC_DRAW);
+    vbo.release();
+}
+void Skeleton::clear()
+{
+    vertices.clear();
+}
+const QVector<QVector3D>& Skeleton::getVertices()
+{
+    return vertices;
+}
 
-void skeleton::initObject   ()
+void Skeleton::initObject   ()
 {
     vao.create();
     vao.bind();
@@ -40,7 +56,7 @@ void skeleton::initObject   ()
     vbo.release();
     vao.release();
 }
-void skeleton::initShader   (QString vertexShaderPath,
+void Skeleton::initShader   (QString vertexShaderPath,
                              QString fragemntShaderPath)
 {
     shader.create();

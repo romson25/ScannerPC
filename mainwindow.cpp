@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(&phone, &TcpServer::message,                 this,             &MainWindow::messageHandling);
 
     connect(&arduino, &UsbPort::connectionStatusChanged, ui->controlPanel,  &ControlPanel::arduinoConnectionChanged);
-    connect(&arduino, &UsbPort::receivedInstruction,    &phone,             &TcpServer::sendInstruction);
+    connect(&arduino, &UsbPort::receivedInstruction,     &phone,            &TcpServer::sendInstruction);
     connect(&arduino, &UsbPort::message,                 this,              &MainWindow::messageHandling);
 
     connect(ui->controlPanel, &ControlPanel::closeConnectionArduino, &arduino, &UsbPort::closeConnection);
