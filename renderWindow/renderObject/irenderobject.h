@@ -20,6 +20,7 @@ public:
     virtual void paint(const QMatrix4x4& mvpMatrix,
                        const QMatrix4x4& modelViewMatrix = QMatrix4x4(),
                        const QMatrix3x3& normalMatrix    = QMatrix3x3() )=0;
+    virtual void clear()=0;
 
 protected:
     QOpenGLBuffer               vbo     {};

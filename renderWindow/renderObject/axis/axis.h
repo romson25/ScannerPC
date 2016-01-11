@@ -16,13 +16,14 @@ public:
     void paint  (const QMatrix4x4& mvpMatrix,
                  const QMatrix4x4& modelViewMatrix  = QMatrix4x4(),
                  const QMatrix3x3& normalMatrix     = QMatrix3x3() );
+    void clear  ();
 
 private:
     void initObject ();
     void initShader (QString vertexShaderPath, QString fragemntShaderPath);
 
-    QVector<QVector3D> vertices;
-    QOpenGLFunctions* f;
+        QVector<QVector3D> vertices;
+        QOpenGLFunctions* f;
 };
 
 #endif // AXIS_H

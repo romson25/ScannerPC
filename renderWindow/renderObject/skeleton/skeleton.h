@@ -16,17 +16,16 @@ public:
     void paint  (const QMatrix4x4& mvpMatrix,
                  const QMatrix4x4& modelViewMatrix  = QMatrix4x4(),
                  const QMatrix3x3& normalMatrix     = QMatrix3x3() );
+    void clear  ();
 
-        void addVertices(std::vector<QVector3D>& vertices);
-        void clear      ();
-        const QVector<QVector3D>&  getVertices();
+        void addVertices(QVector<QVector3D>& vertices);
 
 private:
     void initObject ();
     void initShader (QString vertexShaderPath, QString fragemntShaderPath);
 
-    QVector<QVector3D> vertices;
-    QOpenGLFunctions* f;
+        QVector<QVector3D> vertices;
+        QOpenGLFunctions* f;
 };
 
 #endif // SKELETON_H

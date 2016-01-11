@@ -17,6 +17,9 @@ CONFIG  += c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     controlPanel/controlpanel.cpp \
+    reconstructor/laserreconstructor.cpp \
+    reconstructor/photogrammetryreconstructor.cpp \
+    reconstructor/reconstructorbase.cpp \
     renderWindow/eye/eye.cpp \
     renderWindow/renderObject/axis/axis.cpp \
     renderWindow/renderObject/model/model.cpp \
@@ -25,6 +28,11 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     controlPanel/controlpanel.h \
+    controlPanel/guimode.h \
+    controlPanel/scanningmode.h \
+    reconstructor/laserreconstructor.h \
+    reconstructor/photogrammetryreconstructor.h \
+    reconstructor/reconstructorbase.h \
     renderWindow/eye/direction.h \
     renderWindow/eye/distance.h \
     renderWindow/eye/eye.h \
@@ -32,14 +40,17 @@ HEADERS  += mainwindow.h \
     renderWindow/renderObject/model/model.h \
     renderWindow/renderObject/skeleton/skeleton.h \
     renderWindow/renderObject/irenderobject.h \
-    renderWindow/guimode.h \
     renderWindow/rendermode.h \
-    renderWindow/scene.h \
-    controlPanel/guimode.h
+    renderWindow/scene.h
 
 FORMS    += mainwindow.ui \
     controlPanel/controlpanel.ui \
     renderWindow/scene.ui
+
+
+INCLUDEPATH += /home/adam/Pobrane/cgal-master/Installation/cmake/modules
+INCLUDEPATH += /usr/include/boost/
+LIBS += -L/usr/include/boost/lib/ -lboost_thread -lboost_system
 
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib
@@ -52,31 +63,8 @@ LIBS += -lassimp
 INCLUDEPATH +=   /usr/include/
 LIBS        += -L/usr/include/
 LIBS        += -lCGAL
-LIBS        += -lgmp
-LIBS        += -lassimp
-LIBS        += -lmpfr
 
-INCLUDEPATH +=/usr/include/boost/
-LIBS += -L/usr/include/boost/lib/ -lboost_thread -lboost_system
-
-INCLUDEPATH += /usr/include/eigen3/
-LIBS += -L/usr/include/eigen3/eigen
-
-QMAKE_CXXFLAGS += -frounding-math -O3
-
-INCLUDEPATH += /home/adam/Pobrane/cgal-master/Installation/cmake/modules
-
-#DISTFILES += \
-#    shaders/fragmentaxis.frag \
-#    shaders/vertexaxis.vert \
-#    shaders/fragmentmodel.frag \
-#    shaders/vertexmodel.vert \
-#    shaders/vertexskeleton.vert \
-#    shaders/fragmentskeleton.frag
-
-
-#--LOAD bruceCL
-
+#--bruceCL
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../library/bruceCL/build/release/release/ -lbruceCL
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../library/bruceCL/build/release/debug/ -lbruceCL
 else:unix:!macx: LIBS += -L$$PWD/../../library/bruceCL/build/release/ -lbruceCL
@@ -84,12 +72,11 @@ else:unix:!macx: LIBS += -L$$PWD/../../library/bruceCL/build/release/ -lbruceCL
 INCLUDEPATH += $$PWD/../../library/bruceCL
 DEPENDPATH += $$PWD/../../library/bruceCL
 
+#--bruceCGAL
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../library/bruceRL/bruceCGAL/build/release/ -lbruceCGAL
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../library/bruceRL/bruceCGAL/build/debug/ -lbruceCGAL
+else:unix:!macx: LIBS += -L$$PWD/../../library/bruceRL/bruceCGAL/build/ -lbruceCGAL
 
-#--LOAD bruceCGAL
+INCLUDEPATH += $$PWD/../../library/bruceRL/bruceCGAL/include
+DEPENDPATH += $$PWD/../../library/bruceRL/bruceCGAL/include
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../library/bruceRL/build/release/ -lbruceCGAL
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../library/bruceRL/build/debug/ -lbruceCGAL
-else:unix:!macx: LIBS += -L$$PWD/../../library/bruceRL/build/ -lbruceCGAL
-
-INCLUDEPATH += $$PWD/../../library/bruceRL/include
-DEPENDPATH += $$PWD/../../library/bruceRL/include

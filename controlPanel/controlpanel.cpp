@@ -11,99 +11,101 @@ ControlPanel::~ControlPanel()
     delete ui;
 }
 
-void ControlPanel::arduinoConnectionChanged(ConnectionStatus status)
+void ControlPanel::arduinoConnectionChanged (ConnectionStatus status)
 {
     arduinoReady = (bool)status;
     setGui();
 }
-void ControlPanel::phoneConnectionChanged(ConnectionStatus status)
+void ControlPanel::phoneConnectionChanged   (ConnectionStatus status)
 {
     phoneReady = (bool)status;
     setGui();
 }
-void ControlPanel::phoneAddressChanged(QString ip, QString port)
+void ControlPanel::phoneAddressChanged      (QString ip, QString port)
 {
     ui->ipAddress->setText(ip);
     ui->portNumber->setText(port);
 }
 
-void ControlPanel::scanningControler(Instruction instruction)
+void ControlPanel::scanningControler        (Instruction instruction)
 {
+    qDebug()<<"otrzymano instrukcję: "<<(char)instruction;
     if(instruction == Instruction::endScanning)     //--zakończ skanowanie
         prepareForEndScanning();
     else                                            //--skanuj
     {
-        if(automaticMode)                               //--w trybie wielu zdjęć
+        if(currentPhotosNumber == 0)                        //--zrób pierwsze zdjęcie
         {
-            if(currentPhotosNumber == 0)                        //--zrób pierwsze zdjęcie
-                prepareForStartScanning();
-            else if(currentPhotosNumber < chosenPhotosNumber)   //--rób kolejne dopóki nie zrobisz wszyskich
-                prepareForTakeNextPhoto();
-            else                                                //--wtedy zakończ skanowanie
-                prepareForEndScanning();
+            qDebug()<<"prepare first";
+            prepareForStartScanning();
         }
-        else                                            //--w trybie jednego zdjęcia
-            prepareForTakeOnePhoto();
+        else if(currentPhotosNumber < chosenPhotosNumber)   //--rób kolejne dopóki nie zrobisz wszyskich
+        {
+            qDebug()<<"prepare next";
+            prepareForTakeNextPhoto();
+        }
+        else                                                //--wtedy zakończ skanowanie
+        {
+            qDebug()<<"prepare end";
+            prepareForEndScanning();
+        }
     }
 }
 
-void ControlPanel::on_automaticMode_clicked(bool checked)
-{
-    ui->start_stop->setText( checked ? startLabel : takePhotoLabel );
-    automaticMode = checked;
-}
-void ControlPanel::on_photosSlider_valueChanged(int value)
+void ControlPanel::on_photosSlider_valueChanged         (int value)
 {
     ui->photosLCD->display(availableAngles.at(0).at(value));
 }
-void ControlPanel::on_thresholdSlider_valueChanged(int value)
-{
-    ui->thresholdLCD->display(value);
-}
-void ControlPanel::on_connectWithUsb_clicked()
+void ControlPanel::on_reconnectWithUsb_clicked          ()
 {
     emit openConnectionArduino();
 }
-void ControlPanel::on_start_stop_clicked()
+void ControlPanel::on_start_stop_clicked                ()
 {
-    QString label{ui->start_stop->text()};
+    const QString startLabel    {"Start"};
+    const QString endLabel      {"End"};
 
-    if(label == takePhotoLabel || label == startLabel)
+    if(ui->start_stop->text() == startLabel)
+    {
         scanningControler(Instruction::takePhoto);
+        ui->start_stop->setText(endLabel);
+    }
     else
         scanningControler(Instruction::endScanning);
 }
+void ControlPanel::on_scanningMethod_currentIndexChanged(int index)
+{
+    emit scanningModeChanged( index ? ScanningMode::photogrammetry : ScanningMode::laser );
+}
 
-void ControlPanel::prepareForStartScanning()
+void ControlPanel::prepareForStartScanning  ()
 {
     setGui(GuiMode::whileScanning);
 
     chosenPhotosNumber = ui->photosLCD->intValue();
-    threshold = ui->thresholdLCD->intValue();
-
-    float angleWithoutMotorStep07 = availableAngles.at(1).at(ui->photosSlider->value());
-    angleForRotation = 0.7 * angleWithoutMotorStep07;
     currentPhotosNumber++;
 
-    emit setRotationAngle(angleForRotation);
+    int motorStepsNumber = availableAngles.at(1).at(ui->photosSlider->value());
+    emit motorStepsNumberChanged(motorStepsNumber);
+
     emit sendInstructionArduino(Instruction::takePhoto);
 
     emit scanningStarted();
     emit message(MessageType::log, "Skanowanie rozpoczęte, zrobiono pierwsze zdjęcie");
 }
-void ControlPanel::prepareForTakeNextPhoto()
+void ControlPanel::prepareForTakeNextPhoto  ()
 {
     currentPhotosNumber++;
     currentAngle += angleForRotation;
 
-    emit angleChanged(currentAngle);
+    emit tableAngleChanged(currentAngle);
     emit sendInstructionArduino(Instruction::takePhoto);
 
     QByteArray currentPhoto = QByteArray::number(currentPhotosNumber);
     QByteArray chosenPhotos = QByteArray::number(chosenPhotosNumber);
     emit message(MessageType::log, "Skanowanie w toku: "+currentPhoto+" / "+chosenPhotos);
 }
-void ControlPanel::prepareForEndScanning()
+void ControlPanel::prepareForEndScanning    ()
 {
     setGui(GuiMode::afterScanning);
 
@@ -111,40 +113,30 @@ void ControlPanel::prepareForEndScanning()
     emit scanningFinished();
     emit message(MessageType::log, "Skanowanie zakończone");
 }
-void ControlPanel::prepareForTakeOnePhoto()
-{
-    setGui(GuiMode::whileScanning);
 
-    emit sendInstructionPhone(Instruction::takePhoto);
-    emit message(MessageType::log, "Wykonano jedno zdjęcie");
-}
-
-void ControlPanel::setGui(GuiMode mode)
+void ControlPanel::setGui                   (GuiMode mode)
 {
     if(mode == GuiMode::whileScanning)
     {
         bool b{true};
-        ui->automaticMode   ->setDisabled(b);
-        ui->photosSlider    ->setDisabled(b);
-        ui->thresholdSlider ->setDisabled(b);
+        ui->photosSlider  ->setDisabled(b);
+        ui->scanningMethod->setDisabled(b);
     }
     else
     {
         bool b{phoneReady && arduinoReady};
         ui->start_stop      ->setEnabled(b);
         ui->photosSlider    ->setEnabled(b);
-        ui->thresholdSlider ->setEnabled(b);
-        ui->automaticMode   ->setEnabled(b);
+        ui->scanningMethod  ->setEnabled(b);
 
-        ui->connectWithUsb  ->setDisabled(arduinoReady);
+        ui->reconnectWithUsb  ->setDisabled(arduinoReady);
     }
 
     ui->arduinoStatusLabel->setText(connectedToQString(arduinoReady));
     ui->phoneStatusLabel->setText(connectedToQString(phoneReady));
 }
-QString ControlPanel::connectedToQString(bool isConnected)
+QString ControlPanel::connectedToQString    (bool isConnected)
 {
     return isConnected ? "Connected" : "Disconnected";
 }
-
 

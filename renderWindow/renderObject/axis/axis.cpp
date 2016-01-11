@@ -21,7 +21,10 @@ void Axis::paint (const QMatrix4x4& mvpMatrix,
     shader.release();
     vao.release();
 }
-
+void Axis::clear ()
+{
+    vertices.clear();
+}
 
 void Axis::initObject   ()
 {

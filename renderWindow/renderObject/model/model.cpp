@@ -3,16 +3,16 @@
 Model::Model(QOpenGLFunctions* function) : f{function}
 {}
 
-void Model::init        (QString vertexShaderPath,
-                         QString fragmentShaderPath)
+void Model::init    (QString vertexShaderPath,
+                     QString fragmentShaderPath)
 {
     initShader(vertexShaderPath, fragmentShaderPath);
     initObject();
 }
 
-void Model::paint       (const QMatrix4x4& mvpMatrix,
-                         const QMatrix4x4& modelViewMatrix,
-                         const QMatrix3x3& normalMatrix)
+void Model::paint   (const QMatrix4x4& mvpMatrix,
+                     const QMatrix4x4& modelViewMatrix,
+                     const QMatrix3x3& normalMatrix)
 {
     vao.bind();
     vbo.bind();
@@ -37,31 +37,24 @@ void Model::paint       (const QMatrix4x4& mvpMatrix,
     vao.release();
 }
 
-void Model::addVertices     (QVector3D vertex, QVector3D normal)
+void Model::clear   ()
 {
-    vertices.push_back(vertex);
-    vertices.push_back(normal);
+    data.clear();
+    indices.clear();
 }
-void Model::addIndex        (unsigned int index)
+
+void Model::addData     (const QVector<QVector3D> &nextData,
+                         const QVector<unsigned int> &nextIndices)
 {
-    indices.push_back(index);
-}
-void Model::refreshVertices ()
-{
+    data = std::move(nextData);
     vbo.bind();
-    f->glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(QVector3D), vertices.data(), GL_STATIC_DRAW);
+    f->glBufferData(GL_ARRAY_BUFFER, data.size()*sizeof(QVector3D), data.data(), GL_STATIC_DRAW);
     vbo.release();
-}
-void Model::refreshIndices  ()
-{
+
+    indices = std::move(nextIndices);
     ibo->bind();
     f->glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.length()*sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
     ibo->release();
-}
-void Model::clear           ()
-{
-    vertices.clear();
-    indices.clear();
 }
 
 void Model::initObject  ()

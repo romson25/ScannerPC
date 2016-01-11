@@ -21,15 +21,7 @@
 #include "eye/eye.h"
 #include "rendermode.h"
 
-#include "TcpServer/photogram.h"
 #include "DataProcessor/messagetype.h"
-
-#include "SetPointProcessing.h"
-#include "PoissonSurfaceReconstructrion.h"
-
-#include "assimp/scene.h"
-#include "assimp/postprocess.h"
-#include "assimp/Importer.hpp"
 
 namespace Ui {
 class Scene;
@@ -44,20 +36,18 @@ public:
     ~Scene();
 
 signals:
-    void message(MessageType, QString, QString = "Scene");  //--raportuj problemy i zdarzenia
-    void removeOldestPhotogram();   //--usuwa stare skany które pożerają średnio 1% RAM na skan
-    void modelPathChanged(QString); //--może to zmienić na getModelPath
+    void message            (MessageType, QString, QString = "Scene");  //--raportuj problemy i zdarzenia
+    void modelPathChanged   (QString);  //--może to zmienić na getModelPath
 
 public slots:
-    void scanningStarted();     //--zmień renderMode na Skeleton
-    void scanningFinished();    //--zmień renderMode na Model i wyrenderuj zrekonstruowany model
-    void nextScan           (Photogram &);  //--kolejny skan
-    void renderModelFromFile(QString path); //--gdy otwieram model z pliku
+    void updateModel        (QVector<QVector3D> &,
+                             QVector<unsigned int> &);
+    void updateSkeleton     (QVector<QVector3D> &   );
 
 protected:
-    void initializeGL()        Q_DECL_OVERRIDE;
-    void paintGL()             Q_DECL_OVERRIDE;
-    void resizeGL(int, int)    Q_DECL_OVERRIDE;
+    void initializeGL   ()          Q_DECL_OVERRIDE;
+    void paintGL        ()          Q_DECL_OVERRIDE;
+    void resizeGL       (int, int)  Q_DECL_OVERRIDE;
 
     void mouseMoveEvent (QMouseEvent *event)    Q_DECL_OVERRIDE;
     void wheelEvent     (QWheelEvent *event)    Q_DECL_OVERRIDE;
@@ -81,16 +71,6 @@ private:
     const QString shadersPath   {QDir::currentPath()+"/../../renderWindow/renderObject"};
 
     RenderMode renderMode       {RenderMode::axisAndSkeleton};
-
-    void loadModelFromFile      (QString path);
-    void loadVerticesAndNormals (aiMesh* mesh);
-    void loadIndices            (aiMesh* mesh);
-
-    void clearPreviousModel();
-    void clearPreviousSkeleton();
-
-    void    writeSkeleton       (QString path);
-    QString reconstructSurface  (QString path);
 };
 
 #endif // SCENE_H

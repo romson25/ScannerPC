@@ -9,6 +9,7 @@
 #include "DataProcessor/instruction.h"
 #include "DataProcessor/messagetype.h"
 #include "Connection/connectionstatus.h"
+#include "scanningmode.h"
 
 namespace Ui {
 class ControlPanel;
@@ -32,6 +33,7 @@ signals:
 
     void scanningStarted    ();
     void scanningFinished   ();
+    void scanningModeChanged(ScanningMode);
     void setRotationAngle   (float);
     void angleChanged       (float);
     void message            (MessageType, QString, QString = "ControlPanel");
@@ -42,14 +44,13 @@ public slots:
     void phoneConnectionChanged     (ConnectionStatus);
     void phoneAddressChanged        (QString, QString);
 
-    void scanningControler(Instruction);
+    void scanningControler          (Instruction);
 
 private slots:
-    void on_automaticMode_clicked           (bool checked);
-    void on_photosSlider_valueChanged       (int value);
-    void on_thresholdSlider_valueChanged    (int value);
-    void on_connectWithUsb_clicked          ();
-    void on_start_stop_clicked              ();
+    void on_photosSlider_valueChanged           (int value);
+    void on_reconnectWithUsb_clicked            ();
+    void on_start_stop_clicked                  ();
+    void on_scanningMethod_currentIndexChanged  (int index);
 
 private:
     Ui::ControlPanel *ui;
@@ -58,23 +59,16 @@ private:
 
     int chosenPhotosNumber  {};
     int currentPhotosNumber {};
-    int threshold           {};
 
     float currentAngle      {};
     float angleForRotation  {};
 
     bool arduinoReady   {};
     bool phoneReady     {};
-    bool automaticMode  {};
-
-    const QString startLabel     {"Start"};
-    const QString endLabel       {"End"};
-    const QString takePhotoLabel {"Take photo"};
 
     void prepareForStartScanning ();
     void prepareForTakeNextPhoto ();
     void prepareForEndScanning   ();
-    void prepareForTakeOnePhoto  ();
 
     void setGui(GuiMode = GuiMode::afterScanning);
     QString connectedToQString(bool);

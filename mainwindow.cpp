@@ -8,29 +8,33 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->scene->setFocus();
     openLogFile();
 
-    connect(&phone, &TcpServer::connectionStatusChanged, ui->controlPanel, &ControlPanel::phoneConnectionChanged);
-    connect(&phone, &TcpServer::receivedInstruction,     ui->controlPanel, &ControlPanel::scanningControler);
-    connect(&phone, &TcpServer::serverAddressChanged,    ui->controlPanel, &ControlPanel::phoneAddressChanged);
-    connect(&phone, &TcpServer::receivedPhotogram,       ui->scene,        &Scene::nextScan);
-    connect(&phone, &TcpServer::message,                 this,             &MainWindow::messageHandling);
+    connect(&phone, &TcpServer::connectionStatusChanged,    ui->controlPanel,   &ControlPanel::phoneConnectionChanged);
+    connect(&phone, &TcpServer::receivedInstruction,        ui->controlPanel,   &ControlPanel::scanningControler);
+    connect(&phone, &TcpServer::serverAddressChanged,       ui->controlPanel,   &ControlPanel::phoneAddressChanged);
+    connect(&phone, &TcpServer::receivedImage,              this,               &MainWindow::imageFlowControl);
+    connect(&phone, &TcpServer::message,                    this,               &MainWindow::messageHandling);
 
-    connect(&arduino, &UsbPort::connectionStatusChanged, ui->controlPanel,  &ControlPanel::arduinoConnectionChanged);
-    connect(&arduino, &UsbPort::receivedInstruction,     &phone,            &TcpServer::sendInstruction);
-    connect(&arduino, &UsbPort::message,                 this,              &MainWindow::messageHandling);
+    connect(&arduino, &UsbPort::connectionStatusChanged,    ui->controlPanel,   &ControlPanel::arduinoConnectionChanged);
+    connect(&arduino, &UsbPort::receivedInstruction,        &phone,             &TcpServer::sendInstruction);
+    connect(&arduino, &UsbPort::message,                    this,               &MainWindow::messageHandling);
 
-    connect(ui->controlPanel, &ControlPanel::closeConnectionArduino, &arduino, &UsbPort::closeConnection);
-    connect(ui->controlPanel, &ControlPanel::sendInstructionArduino, &arduino, &UsbPort::sendInstruction);
-    connect(ui->controlPanel, &ControlPanel::setRotationAngle,       &arduino, &UsbPort::setRotateNumber);
+    connect(ui->controlPanel, &ControlPanel::closeConnectionArduino, &arduino,  &UsbPort::closeConnection);
+    connect(ui->controlPanel, &ControlPanel::sendInstructionArduino, &arduino,  &UsbPort::sendInstruction);
+    connect(ui->controlPanel, &ControlPanel::setRotationAngle,       &arduino,  &UsbPort::setRotateNumber);
+    connect(ui->controlPanel, &ControlPanel::openConnectionArduino,  &arduino,  &UsbPort::openConnection);
 
-    connect(ui->controlPanel, &ControlPanel::closeConnectionPhone,  &phone, &TcpServer::closeConnection);
-    connect(ui->controlPanel, &ControlPanel::sendInstructionPhone,  &phone, &TcpServer::sendInstruction);
-    connect(ui->controlPanel, &ControlPanel::angleChanged,          &phone, &TcpServer::angleChanged);
+    connect(ui->controlPanel, &ControlPanel::scanningStarted,       this,   &MainWindow::scanningStarted);
+    connect(ui->controlPanel, &ControlPanel::scanningFinished,      this,   &MainWindow::scanningFinished);
+    connect(ui->controlPanel, &ControlPanel::message,               this,   &MainWindow::messageHandling);
+    connect(ui->controlPanel, &ControlPanel::scanningModeChanged,   this,   &MainWindow::setScanningMode);
 
-    connect(ui->controlPanel, &ControlPanel::scanningStarted,   ui->scene, &Scene::scanningStarted);
-    connect(ui->controlPanel, &ControlPanel::scanningFinished,  ui->scene, &Scene::scanningFinished);
-    connect(ui->controlPanel, &ControlPanel::message,           this,      &MainWindow::messageHandling);
+    connect(ui->controlPanel, &ControlPanel::closeConnectionPhone,  &phone,     &TcpServer::closeConnection);
+    connect(ui->controlPanel, &ControlPanel::sendInstructionPhone,  &phone,     &TcpServer::sendInstruction);
 
-    connect(ui->scene, &Scene::removeOldestPhotogram, &phone, &TcpServer::removeOldestPhotogram);
+    connect(ui->controlPanel, &ControlPanel::angleChanged,          &laser,     &LaserReconstructor::setAngle);
+
+    connect(&laser, &LaserReconstructor::modelChanged,       ui->scene, &Scene::updateModel);
+    connect(&laser, &LaserReconstructor::skeletonChanged,    ui->scene, &Scene::updateSkeleton);
 
     phone.openConnection();
     arduino.openConnection();
@@ -45,22 +49,23 @@ MainWindow::~MainWindow()
     //--usuń pliki tymczasowe
 }
 
-void MainWindow::on_actionOpen_triggered()
+void MainWindow::on_actionOpen_triggered    ()
 {
-    modelFilePath = QFileDialog::getOpenFileName(
-                this, tr("Open Model3D"),
-                QDir::homePath(), tr("Model3D (*.obj *.off)") );
+    modelFilePath = QFileDialog::getOpenFileName(this,
+                                                 tr("Open Model3D"),
+                                                 QDir::homePath(),
+                                                 tr("Model3D (*.obj *.off)") );
 
     if( modelFilePath.isEmpty() )
         return;
     else
     {
-        ui->scene->renderModelFromFile(modelFilePath);
+        laser.loadModel(modelFilePath);
         messageHandling(MessageType::log, "Otworzono plik z modelem: "+modelFilePath);
     }
 
 }
-void MainWindow::on_actionSave_triggered()
+void MainWindow::on_actionSave_triggered    ()
 {
     QFile model{modelFilePath};
     QString modelFileName {model.fileName()};
@@ -86,37 +91,44 @@ void MainWindow::on_actionSave_triggered()
             messageHandling(MessageType::warning, "Plik z modelem nie został zapisany");
     }
 }
-void MainWindow::on_actionExit_triggered()
+void MainWindow::on_actionExit_triggered    ()
 {
     qApp->exit(0);
     //--dodaj operacje przed zakmnięciem
 }
-void MainWindow::on_actionManual_triggered()
+void MainWindow::on_actionHelp_triggered    ()
 {
     //--manual którego nie ma i szybko nie będzie
 }
 
-void MainWindow::messageHandling(MessageType type, QString what, QString who)
+void MainWindow::imageFlowControl       (QImage &image)
 {
-    if(logFile.isWritable())
-    {
-        QString time = date.currentDateTime().toString("HH:mm:ss");
-        QString log = time + "\t" + (char)type + "\t" + who + "\t" + what + "\n";
-
-        stream<<log;
-    }
+    qDebug()<<"otrzymano zdjęcie";
+    if(scanningMode == ScanningMode::laser)
+        laser.addImage(image);
     else
-    {
-        showMessageOnStatusBar("Nie można otworzyć dziennika zdarzeń");
-        return;
-    }
-
-    if(type == MessageType::criticalError || type == MessageType::warning)
-        showMessageOnStatusBar(what);
-
-
+        qDebug()<<"ERROR Nieznany tryb skanowania";
 }
-void MainWindow::openLogFile()
+void MainWindow::scanningStarted        ()
+{
+    if(scanningMode == ScanningMode::laser)
+        laser.scanningStarted();
+    else
+        qDebug()<<"Nieobsługiwany tryb skanowania";
+}
+void MainWindow::scanningFinished       ()
+{
+    if(scanningMode == ScanningMode::laser)
+        laser.scanningFinished();
+    else
+        qDebug()<<"Nieobsługiwany tryb skanowania";
+}
+void MainWindow::setScanningMode        (ScanningMode mode)
+{
+    scanningMode = mode;
+}
+
+void MainWindow::openLogFile            ()
 {
     if( logFile.open(QIODevice::WriteOnly) )
     {
@@ -136,15 +148,31 @@ void MainWindow::openLogFile()
     else
         messageHandling(MessageType::criticalError, "Nie można otworzyć dziennika zdarzeń");
 }
-void MainWindow::closeLogFile()
+void MainWindow::closeLogFile           ()
 {
     logFile.close();
 }
-void MainWindow::modelPathChanged(QString path)
+void MainWindow::messageHandling        (MessageType type, QString what, QString who)
 {
-    modelFilePath = path;
+    if(logFile.isWritable())
+    {
+        QString time = date.currentDateTime().toString("HH:mm:ss");
+        QString log = time + "\t" + (char)type + "\t" + who + "\t" + what + "\n";
+
+        stream<<log;
+    }
+    else
+    {
+        showMessageOnStatusBar("Nie można otworzyć dziennika zdarzeń");
+        return;
+    }
+
+    if(type == MessageType::criticalError || type == MessageType::warning)
+        showMessageOnStatusBar(what);
+
+
 }
-void MainWindow::showMessageOnStatusBar(QString what)
+void MainWindow::showMessageOnStatusBar (QString what)
 {
     ui->statusBar->showMessage(what, 3000);
 }

@@ -17,22 +17,20 @@ public:
     void paint  (const QMatrix4x4& mvpMatrix,
                  const QMatrix4x4& modelViewMatrix  = QMatrix4x4(),
                  const QMatrix3x3& normalMatrix     = QMatrix3x3() );
+    void clear  ();
 
-    void addVertices    (QVector3D vertex, QVector3D normal);
-    void addIndex       (unsigned int index);
-    void refreshVertices();
-    void refreshIndices ();
-    void clear          ();
+        void addData(const QVector<QVector3D> &nextData,
+                 const QVector<unsigned int> &nextIndices);
 
 private:
     void initObject ();
     void initShader (QString vertexShaderPath, QString fragemntShaderPath);
 
-    QOpenGLBuffer *ibo {new QOpenGLBuffer(QOpenGLBuffer::Type::IndexBuffer)};
+        QOpenGLBuffer *ibo {new QOpenGLBuffer(QOpenGLBuffer::Type::IndexBuffer)};
+        QOpenGLFunctions* f;
 
-    QVector<QVector3D> vertices;
-    QVector<unsigned int> indices;
-    QOpenGLFunctions* f;
+        QVector<QVector3D>      data    {};
+        QVector<unsigned int>   indices {};
 };
 
 #endif // MODEL_H

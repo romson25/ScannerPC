@@ -26,20 +26,16 @@ void Skeleton::paint(const QMatrix4x4 &mvpMatrix,
     vao.release();
 }
 
-void Skeleton::addVertices(std::vector<QVector3D> &nextVertices)
+void Skeleton::addVertices  (QVector<QVector3D> &nextVertices)
 {
     std::move(nextVertices.begin(), nextVertices.end(), std::back_inserter(vertices));
     vbo.bind();
     f->glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(QVector3D), vertices.data(), GL_STATIC_DRAW);
     vbo.release();
 }
-void Skeleton::clear()
+void Skeleton::clear        ()
 {
     vertices.clear();
-}
-const QVector<QVector3D>& Skeleton::getVertices()
-{
-    return vertices;
 }
 
 void Skeleton::initObject   ()
