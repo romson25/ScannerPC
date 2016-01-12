@@ -72,11 +72,10 @@ else:unix:!macx: LIBS += -L$$PWD/../../library/bruceCL/build/release/ -lbruceCL
 INCLUDEPATH += $$PWD/../../library/bruceCL
 DEPENDPATH += $$PWD/../../library/bruceCL
 
-#--bruceCGAL
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../library/bruceRL/bruceCGAL/build/release/ -lbruceCGAL
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../library/bruceRL/bruceCGAL/build/debug/ -lbruceCGAL
-else:unix:!macx: LIBS += -L$$PWD/../../library/bruceRL/bruceCGAL/build/ -lbruceCGAL
+#--bruceRL
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../library/bruceRL/build/release/ -lbruceRL
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../library/bruceRL/build/debug/ -lbruceRL
+else:unix:!macx: LIBS += -L$$PWD/../../library/bruceRL/build/ -lbruceRL
 
-INCLUDEPATH += $$PWD/../../library/bruceRL/bruceCGAL/include
-DEPENDPATH += $$PWD/../../library/bruceRL/bruceCGAL/include
-
+INCLUDEPATH += $$PWD/../../library/bruceRL
+DEPENDPATH += $$PWD/../../library/bruceRL

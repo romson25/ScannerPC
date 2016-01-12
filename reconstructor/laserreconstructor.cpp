@@ -20,16 +20,19 @@ void LaserReconstructor::setAngle   (float a)
 }
 void LaserReconstructor::estimate   ()
 {
-    int imageWidth      = cvImage.cols;
-    int imageHalfWidth  = cvImage.cols / 2;
-    int imageHalfHeight = cvImage.rows / 2;
+    int imageWidth  = cvImage.cols;
+    int imageHeight = cvImage.rows;
+    int xMin { imageWidth/2     };
+    int xMax { imageWidth-200   };
+    int yMin { 200              };
+    int yMax { imageHeight/2    };
 
-    for(int y = 0; y < imageHalfHeight; y++)
+    for(int y = yMin; y < yMax; y++)
     {
         int positionBrightestPixel = -1;
         int valueBrightestPixel {};
 
-        for(int x = imageHalfWidth; x < imageWidth; x++)
+        for(int x = xMin; x < xMax; x++)
         {
             uchar brightness{cvImage.at<uchar>(y,x)};
 
