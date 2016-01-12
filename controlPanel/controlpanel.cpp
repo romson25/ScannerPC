@@ -29,26 +29,16 @@ void ControlPanel::phoneAddressChanged      (QString ip, QString port)
 
 void ControlPanel::scanningControler        (Instruction instruction)
 {
-    qDebug()<<"otrzymano instrukcję: "<<(char)instruction;
     if(instruction == Instruction::endScanning)     //--zakończ skanowanie
         prepareForEndScanning();
     else                                            //--skanuj
     {
         if(currentPhotosNumber == 0)                        //--zrób pierwsze zdjęcie
-        {
-            qDebug()<<"prepare first";
             prepareForStartScanning();
-        }
         else if(currentPhotosNumber < chosenPhotosNumber)   //--rób kolejne dopóki nie zrobisz wszyskich
-        {
-            qDebug()<<"prepare next";
             prepareForTakeNextPhoto();
-        }
         else                                                //--wtedy zakończ skanowanie
-        {
-            qDebug()<<"prepare end";
             prepareForEndScanning();
-        }
     }
 }
 
@@ -82,12 +72,15 @@ void ControlPanel::prepareForStartScanning  ()
 {
     setGui(GuiMode::whileScanning);
 
-    chosenPhotosNumber = ui->photosLCD->intValue();
-    currentPhotosNumber++;
-
     int motorStepsNumber = availableAngles.at(1).at(ui->photosSlider->value());
     emit motorStepsNumberChanged(motorStepsNumber);
 
+    chosenPhotosNumber = ui->photosLCD->intValue();
+    currentPhotosNumber++;
+    angleForRotation = motorStepsNumber * 0.7;
+    currentAngle += angleForRotation;
+
+    emit tableAngleChanged(currentAngle);
     emit sendInstructionArduino(Instruction::takePhoto);
 
     emit scanningStarted();
@@ -122,9 +115,10 @@ void ControlPanel::setGui                   (GuiMode mode)
         ui->photosSlider  ->setDisabled(b);
         ui->scanningMethod->setDisabled(b);
     }
-    else
+    else if(mode == GuiMode::afterScanning)
     {
         bool b{phoneReady && arduinoReady};
+        ui->start_stop->setText("Start");
         ui->start_stop      ->setEnabled(b);
         ui->photosSlider    ->setEnabled(b);
         ui->scanningMethod  ->setEnabled(b);

@@ -12,8 +12,11 @@ void ReconstructorBase::scanningStarted ()
 }
 void ReconstructorBase::scanningFinished()
 {
-//--po zakończeniu skanowania zrekonstruuj scene
-    reconstruct();
+//--po zakończeniu skanowania zrekonstruuj scene jeżeli chmura jest wystarczjąco duża
+    if(cloud.length() > 1000)
+        reconstruct();
+    else
+        qDebug()<<"Rekonstrukcja nie zostanie przeprowadzona, chmura jest zbyt mała";
 }
 
 void ReconstructorBase::loadModel   (QString path)
@@ -122,7 +125,7 @@ void ReconstructorBase::reconstruct ()
 
 //--zrekonstruuj model i zapisz do pliku
     PoissonSurfaceReconstructrion p(tempPath);
-    QString pathToModel = QString::fromStdString(p.reconstruct());
+    QString pathToModel = QString::fromStdString( p.reconstruct(30.0, 2.0, 0.2) );
 
 //--wczytaj ten model i daj znać, że możesz renderować
     loadModel(pathToModel);

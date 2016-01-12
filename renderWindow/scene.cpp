@@ -20,7 +20,7 @@ void Scene::updateModel     (QVector<QVector3D> &nextData,
 }
 void Scene::updateSkeleton  (QVector<QVector3D> &cloud)
 {
-    renderMode = RenderMode::axisAndModel;
+    renderMode = RenderMode::axisAndSkeleton;
     //wyczyść skeleton
     skeleton.addVertices(cloud);
     update();

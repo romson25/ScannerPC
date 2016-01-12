@@ -18,10 +18,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(&arduino, &UsbPort::receivedInstruction,        &phone,             &TcpServer::sendInstruction);
     connect(&arduino, &UsbPort::message,                    this,               &MainWindow::messageHandling);
 
-    connect(ui->controlPanel, &ControlPanel::closeConnectionArduino, &arduino,  &UsbPort::closeConnection);
-    connect(ui->controlPanel, &ControlPanel::sendInstructionArduino, &arduino,  &UsbPort::sendInstruction);
-    connect(ui->controlPanel, &ControlPanel::setRotationAngle,       &arduino,  &UsbPort::setRotateNumber);
-    connect(ui->controlPanel, &ControlPanel::openConnectionArduino,  &arduino,  &UsbPort::openConnection);
+    connect(ui->controlPanel, &ControlPanel::closeConnectionArduino,    &arduino,  &UsbPort::closeConnection);
+    connect(ui->controlPanel, &ControlPanel::sendInstructionArduino,    &arduino,  &UsbPort::sendInstruction);
+    connect(ui->controlPanel, &ControlPanel::motorStepsNumberChanged,   &arduino,  &UsbPort::setStepsMotorNumber);
+    connect(ui->controlPanel, &ControlPanel::openConnectionArduino,     &arduino,  &UsbPort::openConnection);
 
     connect(ui->controlPanel, &ControlPanel::scanningStarted,       this,   &MainWindow::scanningStarted);
     connect(ui->controlPanel, &ControlPanel::scanningFinished,      this,   &MainWindow::scanningFinished);
@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->controlPanel, &ControlPanel::closeConnectionPhone,  &phone,     &TcpServer::closeConnection);
     connect(ui->controlPanel, &ControlPanel::sendInstructionPhone,  &phone,     &TcpServer::sendInstruction);
 
-    connect(ui->controlPanel, &ControlPanel::angleChanged,          &laser,     &LaserReconstructor::setAngle);
+    connect(ui->controlPanel, &ControlPanel::tableAngleChanged,     &laser,     &LaserReconstructor::setAngle);
 
     connect(&laser, &LaserReconstructor::modelChanged,       ui->scene, &Scene::updateModel);
     connect(&laser, &LaserReconstructor::skeletonChanged,    ui->scene, &Scene::updateSkeleton);
@@ -103,7 +103,6 @@ void MainWindow::on_actionHelp_triggered    ()
 
 void MainWindow::imageFlowControl       (QImage &image)
 {
-    qDebug()<<"otrzymano zdjęcie";
     if(scanningMode == ScanningMode::laser)
         laser.addImage(image);
     else

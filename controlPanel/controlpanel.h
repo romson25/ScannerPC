@@ -31,12 +31,12 @@ signals:
     void sendInstructionArduino (Instruction);
     void sendInstructionPhone   (Instruction);
 
-    void scanningStarted    ();
-    void scanningFinished   ();
-    void scanningModeChanged(ScanningMode);
-    void setRotationAngle   (float);
-    void angleChanged       (float);
-    void message            (MessageType, QString, QString = "ControlPanel");
+    void scanningStarted        ();
+    void scanningFinished       ();
+    void scanningModeChanged    (ScanningMode);
+    void motorStepsNumberChanged(float);
+    void tableAngleChanged      (float);
+    void message                (MessageType, QString, QString = "ControlPanel");
 
 public slots:
     void arduinoConnectionChanged   (ConnectionStatus);

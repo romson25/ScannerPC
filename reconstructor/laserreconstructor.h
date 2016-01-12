@@ -21,6 +21,7 @@ private:
 
         float sinAngle {};
         float cosAngle {};
+        const int threshold {50};
 };
 
 #endif // LASERRECONSTRUCTOR_H

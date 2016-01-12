@@ -7,8 +7,11 @@ void LaserReconstructor::addImage   (const QImage& image)
 {
     cv::Mat tmp(image.height(),image.width(), CV_8UC4,(uchar*)image.bits(),image.bytesPerLine());
     cv::cvtColor(tmp, cvImage, cv::COLOR_BGR2GRAY);
+
     estimate();
     emit skeletonChanged(cloud);
+    static int i {0};
+    qDebug()<<++i<<" LaserReconstructor.currentCloudSize: "<<cloud.length();
 }
 void LaserReconstructor::setAngle   (float a)
 {
@@ -20,7 +23,6 @@ void LaserReconstructor::estimate   ()
     int imageWidth      = cvImage.cols;
     int imageHalfWidth  = cvImage.cols / 2;
     int imageHalfHeight = cvImage.rows / 2;
-    const int threshold {100};
 
     for(int y = 0; y < imageHalfHeight; y++)
     {
