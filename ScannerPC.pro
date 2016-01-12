@@ -77,5 +77,5 @@ win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../library/bruceRL/buil
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../library/bruceRL/build/debug/ -lbruceRL
 else:unix:!macx: LIBS += -L$$PWD/../../library/bruceRL/build/ -lbruceRL
 
-INCLUDEPATH += $$PWD/../../library/bruceRL
-DEPENDPATH += $$PWD/../../library/bruceRL
+INCLUDEPATH += $$PWD/../../library/bruceRL/include
+DEPENDPATH += $$PWD/../../library/bruceRL/include
