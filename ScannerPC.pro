@@ -55,8 +55,10 @@ LIBS += -L/usr/include/boost/lib/ -lboost_thread -lboost_system
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib
 LIBS += -lopencv_core
+LIBS += -lopencv_highgui
 LIBS += -lopencv_imgproc
 LIBS += -lopencv_imgcodecs
+LIBS += -lopencv_features2d
 
 LIBS += -lassimp
 
@@ -73,9 +75,9 @@ INCLUDEPATH += $$PWD/../../library/bruceCL
 DEPENDPATH += $$PWD/../../library/bruceCL
 
 #--bruceRL
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../library/bruceRL/build/release/ -lbruceRL
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../library/bruceRL/build/debug/ -lbruceRL
-else:unix:!macx: LIBS += -L$$PWD/../../library/bruceRL/build/ -lbruceRL
+#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../library/bruceRL/build/release/ -lbruceRL
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../library/bruceRL/build/debug/ -lbruceRL
+#else:unix:!macx: LIBS += -L$$PWD/../../library/bruceRL/build/ -lbruceRL
 
-INCLUDEPATH += $$PWD/../../library/bruceRL/include
-DEPENDPATH += $$PWD/../../library/bruceRL/include
+#INCLUDEPATH += $$PWD/../../library/bruceRL/include
+#DEPENDPATH += $$PWD/../../library/bruceRL/include

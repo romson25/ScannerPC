@@ -14,6 +14,7 @@
 #include "controlPanel/scanningmode.h"
 #include "renderWindow/scene.h"
 #include "reconstructor/laserreconstructor.h"
+#include "reconstructor/photogrammetryreconstructor.h"
 
 namespace Ui {
 class MainWindow;
@@ -45,7 +46,8 @@ private:
     TcpServer   phone   {};
     UsbPort     arduino {};
 
-    LaserReconstructor laser {};
+    LaserReconstructor          laserReconstructor {};
+    PhotogrammetryReconstructor photogrammetryReconstructor {};
 
     QDateTime   date    { QDateTime::currentDateTime() };
     QFile       logFile { "logfile.txt" };

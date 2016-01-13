@@ -31,10 +31,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->controlPanel, &ControlPanel::closeConnectionPhone,  &phone,     &TcpServer::closeConnection);
     connect(ui->controlPanel, &ControlPanel::sendInstructionPhone,  &phone,     &TcpServer::sendInstruction);
 
-    connect(ui->controlPanel, &ControlPanel::tableAngleChanged,     &laser,     &LaserReconstructor::setAngle);
+    connect(ui->controlPanel, &ControlPanel::tableAngleChanged,     &laserReconstructor,            &LaserReconstructor::setAngle);
+    connect(ui->controlPanel, &ControlPanel::tableAngleChanged,     &photogrammetryReconstructor,   &PhotogrammetryReconstructor::setAngle);
 
-    connect(&laser, &LaserReconstructor::modelChanged,       ui->scene, &Scene::updateModel);
-    connect(&laser, &LaserReconstructor::skeletonChanged,    ui->scene, &Scene::updateSkeleton);
+    connect(&laserReconstructor, &LaserReconstructor::modelChanged,       ui->scene, &Scene::updateModel);
+    connect(&laserReconstructor, &LaserReconstructor::skeletonChanged,    ui->scene, &Scene::updateSkeleton);
+
+    connect(&photogrammetryReconstructor, &PhotogrammetryReconstructor::modelChanged,       ui->scene, &Scene::updateModel);
+    connect(&photogrammetryReconstructor, &PhotogrammetryReconstructor::skeletonChanged,    ui->scene, &Scene::updateSkeleton);
 
     phone.openConnection();
     arduino.openConnection();
@@ -60,7 +64,7 @@ void MainWindow::on_actionOpen_triggered    ()
         return;
     else
     {
-        laser.loadModel(modelFilePath);
+        laserReconstructor.loadModel(modelFilePath);
         messageHandling(MessageType::log, "Otworzono plik z modelem: "+modelFilePath);
     }
 
@@ -104,23 +108,23 @@ void MainWindow::on_actionHelp_triggered    ()
 void MainWindow::imageFlowControl       (QImage &image)
 {
     if(scanningMode == ScanningMode::laser)
-        laser.addImage(image);
+        laserReconstructor.addImage(image);
     else
-        qDebug()<<"ERROR Nieznany tryb skanowania";
+        photogrammetryReconstructor.addImage(image);
 }
 void MainWindow::scanningStarted        ()
 {
     if(scanningMode == ScanningMode::laser)
-        laser.scanningStarted();
+        laserReconstructor.scanningStarted();
     else
-        qDebug()<<"Nieobsługiwany tryb skanowania";
+        photogrammetryReconstructor.scanningStarted();
 }
 void MainWindow::scanningFinished       ()
 {
     if(scanningMode == ScanningMode::laser)
-        laser.scanningFinished();
+        laserReconstructor.scanningFinished();
     else
-        qDebug()<<"Nieobsługiwany tryb skanowania";
+        photogrammetryReconstructor.scanningFinished();
 }
 void MainWindow::setScanningMode        (ScanningMode mode)
 {

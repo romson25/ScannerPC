@@ -18,7 +18,6 @@ void ReconstructorBase::scanningFinished()
     else
         qDebug()<<"Rekonstrukcja nie zostanie przeprowadzona, chmura jest zbyt mała";
 }
-
 void ReconstructorBase::loadModel   (QString path)
 {
     clear();
@@ -65,6 +64,11 @@ void ReconstructorBase::saveCloud   (QString path)
 
     file.flush();
     file.close();
+}
+void ReconstructorBase::setAngle    (float angle)
+{
+    sinAngle = qSin( qDegreesToRadians(angle) );
+    cosAngle = qCos( qDegreesToRadians(angle) );
 }
 void ReconstructorBase::setData     (aiMesh *mesh)
 {
@@ -115,21 +119,21 @@ void ReconstructorBase::setIndices  (aiMesh *mesh)
 }
 void ReconstructorBase::reconstruct ()
 {
-//--zapisz chmurę punktów (skeleton)
-    const QString path {"model.xyz"};
-    saveCloud(path);
+////--zapisz chmurę punktów (skeleton)
+//    const QString path {"model.xyz"};
+//    saveCloud(path);
 
-//--zoptymalizuj ją i wyznacz normalne
-    SetPointProcessing s(path.toStdString());
-    std::string tempPath = s.compute();
+////--zoptymalizuj ją i wyznacz normalne
+//    SetPointProcessing s(path.toStdString());
+//    std::string tempPath = s.compute();
 
-//--zrekonstruuj model i zapisz do pliku
-    PoissonSurfaceReconstructrion p(tempPath);
-    QString pathToModel = QString::fromStdString( p.reconstruct(30.0, 2.0, 0.2) );
+////--zrekonstruuj model i zapisz do pliku
+//    PoissonSurfaceReconstructrion p(tempPath);
+//    QString pathToModel = QString::fromStdString( p.reconstruct(30.0, 2.0, 0.2) );
 
-//--wczytaj ten model i daj znać, że możesz renderować
-    loadModel(pathToModel);
-    emit modelChanged(data, indices);
+////--wczytaj ten model i daj znać, że możesz renderować
+//    loadModel(pathToModel);
+//    emit modelChanged(data, indices);
 }
 void ReconstructorBase::clear       ()
 {

@@ -13,11 +13,6 @@ void LaserReconstructor::addImage   (const QImage& image)
     static int i {0};
     qDebug()<<++i<<" LaserReconstructor.currentCloudSize: "<<cloud.length();
 }
-void LaserReconstructor::setAngle   (float a)
-{
-    sinAngle = qSin( qDegreesToRadians(a) );
-    cosAngle = qCos( qDegreesToRadians(a) );
-}
 void LaserReconstructor::estimate   ()
 {
     int imageWidth  = cvImage.cols;
