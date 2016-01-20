@@ -29,6 +29,7 @@ void ControlPanel::phoneAddressChanged      (QString ip, QString port)
 
 void ControlPanel::scanningControler        (Instruction instruction)
 {
+    qDebug()<<"Widamość z LG: "<<(char)instruction;
     if(instruction == Instruction::endScanning)     //--zakończ skanowanie
         prepareForEndScanning();
     else                                            //--skanuj
@@ -97,10 +98,12 @@ void ControlPanel::prepareForTakeNextPhoto  ()
     QByteArray currentPhoto = QByteArray::number(currentPhotosNumber);
     QByteArray chosenPhotos = QByteArray::number(chosenPhotosNumber);
     emit message(MessageType::log, "Skanowanie w toku: "+currentPhoto+" / "+chosenPhotos);
+    qDebug()<<"Arduino obróć stół";
 }
 void ControlPanel::prepareForEndScanning    ()
 {
     setGui(GuiMode::afterScanning);
+    currentPhotosNumber = 0;
 
     emit sendInstructionArduino(Instruction::endScanning);
     emit scanningFinished();
