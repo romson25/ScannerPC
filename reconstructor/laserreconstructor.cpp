@@ -44,14 +44,15 @@ void LaserReconstructor::estimate   ()
 }
 void LaserReconstructor::mathCalc   (int x, int y)
 {
-    float e = (float)(x - 1280)/256;
+    const float xFactor {17.5/1280};
+
+    float e = (float)(x - 1280)*xFactor;
     float f = (float)(960 - y)/2560;
 
     QLineF gLine(0, 0, 35, 20);
     QLineF nLine(0, e, 35, 0 );
     QPointF xPos{};                 //--punkt przecięcia
     nLine.intersect(gLine, &xPos);  //--nadanie mu wartości
-    qDebug()<<"xPos: "<<xPos<<"\te: "<<e<<"\tx: "<<x<<"\ty: "<<y;
 
     QLineF n(35, 0, xPos.x(), xPos.y());    //--linia od kamery do punktu przecięcia (do linii)
     float r   = 2.0 * xPos.y();             //--na podstawie trójkąta 30, 60, 90

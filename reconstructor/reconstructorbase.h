@@ -19,8 +19,8 @@
 #include "assimp/postprocess.h"
 #include "assimp/Importer.hpp"
 
-//#include "SetPointProcessing.h"
-//#include "PoissonSurfaceReconstructrion.h"
+#include "SetPointProcessing.h"
+#include "PoissonSurfaceReconstructrion.h"
 
 class ReconstructorBase : public QObject
 {
