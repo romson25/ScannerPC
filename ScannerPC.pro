@@ -29,7 +29,6 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     controlPanel/controlpanel.h \
     controlPanel/guimode.h \
-    controlPanel/scanningmode.h \
     reconstructor/laserreconstructor.h \
     reconstructor/photogrammetryreconstructor.h \
     reconstructor/reconstructorbase.h \
@@ -47,37 +46,36 @@ FORMS    += mainwindow.ui \
     controlPanel/controlpanel.ui \
     renderWindow/scene.ui
 
-
-INCLUDEPATH += /home/adam/Pobrane/cgal-master/Installation/cmake/modules
-INCLUDEPATH += /usr/include/boost/
-LIBS += -L/usr/include/boost/lib/ -lboost_thread -lboost_system
-
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib
+LIBS += -lassimp
+LIBS += -lCGAL
+#LIBS += -ltheia
 LIBS += -lopencv_core
 LIBS += -lopencv_highgui
 LIBS += -lopencv_imgproc
 LIBS += -lopencv_imgcodecs
-LIBS += -lopencv_features2d
-
-LIBS += -lassimp
-
-INCLUDEPATH +=   /usr/include/
-LIBS        += -L/usr/include/
-LIBS        += -lCGAL
 
 #--bruceCL
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../library/bruceCL/build/release/release/ -lbruceCL
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../library/bruceCL/build/release/debug/ -lbruceCL
-else:unix:!macx: LIBS += -L$$PWD/../../library/bruceCL/build/release/ -lbruceCL
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../bruceCL/build/Debug/release/ -lbruceCL
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bruceCL/build/Debug/debug/ -lbruceCL
+else:unix:!macx: LIBS += -L$$PWD/../bruceCL/build/Debug/ -lbruceCL
 
-INCLUDEPATH += $$PWD/../../library/bruceCL
-DEPENDPATH += $$PWD/../../library/bruceCL
+INCLUDEPATH += $$PWD/../bruceCL
+DEPENDPATH += $$PWD/../bruceCL
 
 #--bruceRL
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../library/bruceRL/build/release/ -lbruceRL
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../library/bruceRL/build/debug/ -lbruceRL
-else:unix:!macx: LIBS += -L$$PWD/../../library/bruceRL/build/ -lbruceRL
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../bruceRL/build/Domyślna/release/ -lbruceRL
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bruceRL/build/Domyślna/debug/ -lbruceRL
+else:unix:!macx: LIBS += -L$$PWD/../bruceRL/build/Domyślna/ -lbruceRL
 
-INCLUDEPATH += $$PWD/../../library/bruceRL/include
-DEPENDPATH += $$PWD/../../library/bruceRL/include
+INCLUDEPATH += $$PWD/../bruceRL/include
+DEPENDPATH += $$PWD/../bruceRL/include
+
+#--brucePL
+#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../prototype/brucePL/build/Domyślna/release/ -lbrucePL
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../prototype/brucePL/build/Domyślna/debug/ -lbrucePL
+#else:unix:!macx: LIBS += -L$$PWD/../../prototype/brucePL/build/Domyślna/ -lbrucePL
+
+#INCLUDEPATH += $$PWD/../../prototype/brucePL/include
+#DEPENDPATH += $$PWD/../../prototype/brucePL/include

@@ -11,8 +11,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(&phone, &TcpServer::connectionStatusChanged,    ui->controlPanel,   &ControlPanel::phoneConnectionChanged);
     connect(&phone, &TcpServer::receivedInstruction,        ui->controlPanel,   &ControlPanel::scanningControler);
     connect(&phone, &TcpServer::serverAddressChanged,       ui->controlPanel,   &ControlPanel::phoneAddressChanged);
-    connect(&phone, &TcpServer::receivedImage,              this,               &MainWindow::imageFlowControl);
     connect(&phone, &TcpServer::message,                    this,               &MainWindow::messageHandling);
+    connect(&phone, &TcpServer::receivedImage,              &laserReconstructor,&LaserReconstructor::addImage);
 
     connect(&arduino, &UsbPort::connectionStatusChanged,    ui->controlPanel,   &ControlPanel::arduinoConnectionChanged);
     connect(&arduino, &UsbPort::receivedInstruction,        &phone,             &TcpServer::sendInstruction);
@@ -23,22 +23,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->controlPanel, &ControlPanel::motorStepsNumberChanged,   &arduino,  &UsbPort::setStepsMotorNumber);
     connect(ui->controlPanel, &ControlPanel::openConnectionArduino,     &arduino,  &UsbPort::openConnection);
 
-    connect(ui->controlPanel, &ControlPanel::scanningStarted,       this,   &MainWindow::scanningStarted);
-    connect(ui->controlPanel, &ControlPanel::scanningFinished,      this,   &MainWindow::scanningFinished);
-    connect(ui->controlPanel, &ControlPanel::message,               this,   &MainWindow::messageHandling);
-    connect(ui->controlPanel, &ControlPanel::scanningModeChanged,   this,   &MainWindow::setScanningMode);
+    connect(ui->controlPanel, &ControlPanel::tableAngleChanged,     &laserReconstructor,   &LaserReconstructor::setAngle);
+    connect(ui->controlPanel, &ControlPanel::scanningStarted,       &laserReconstructor,   &LaserReconstructor::scanningStarted);
+    connect(ui->controlPanel, &ControlPanel::scanningFinished,      &laserReconstructor,   &LaserReconstructor::scanningFinished);
 
     connect(ui->controlPanel, &ControlPanel::closeConnectionPhone,  &phone,     &TcpServer::closeConnection);
     connect(ui->controlPanel, &ControlPanel::sendInstructionPhone,  &phone,     &TcpServer::sendInstruction);
 
-    connect(ui->controlPanel, &ControlPanel::tableAngleChanged,     &laserReconstructor,            &LaserReconstructor::setAngle);
-    connect(ui->controlPanel, &ControlPanel::tableAngleChanged,     &photogrammetryReconstructor,   &PhotogrammetryReconstructor::setAngle);
+    connect(ui->controlPanel, &ControlPanel::message,               this,       &MainWindow::messageHandling);
 
     connect(&laserReconstructor, &LaserReconstructor::modelChanged,       ui->scene, &Scene::updateModel);
     connect(&laserReconstructor, &LaserReconstructor::skeletonChanged,    ui->scene, &Scene::updateSkeleton);
 
     connect(&photogrammetryReconstructor, &PhotogrammetryReconstructor::modelChanged,       ui->scene, &Scene::updateModel);
-    connect(&photogrammetryReconstructor, &PhotogrammetryReconstructor::skeletonChanged,    ui->scene, &Scene::updateSkeleton);
 
     phone.openConnection();
     arduino.openConnection();
@@ -57,7 +54,7 @@ void MainWindow::on_actionOpen_triggered    ()
 {
     modelFilePath = QFileDialog::getOpenFileName(this,
                                                  tr("Open Model3D"),
-                                                 QDir::homePath(),
+                                                 QDir::currentPath(),
                                                  tr("Model3D (*.obj *.off)") );
 
     if( modelFilePath.isEmpty() )
@@ -105,37 +102,10 @@ void MainWindow::on_actionHelp_triggered    ()
     //--manual którego nie ma i szybko nie będzie
 }
 
-void MainWindow::imageFlowControl       (QImage &image)
-{
-    if(scanningMode == ScanningMode::laser)
-        laserReconstructor.addImage(image);
-    else
-        photogrammetryReconstructor.addImage(image);
-}
-void MainWindow::scanningStarted        ()
-{
-    if(scanningMode == ScanningMode::laser)
-        laserReconstructor.scanningStarted();
-    else
-        photogrammetryReconstructor.scanningStarted();
-}
-void MainWindow::scanningFinished       ()
-{
-    if(scanningMode == ScanningMode::laser)
-        laserReconstructor.scanningFinished();
-    else
-        photogrammetryReconstructor.scanningFinished();
-}
-void MainWindow::setScanningMode        (ScanningMode mode)
-{
-    scanningMode = mode;
-}
-
 void MainWindow::openLogFile            ()
 {
     if( logFile.open(QIODevice::WriteOnly) )
     {
-
         QString currentDate = date.date().toString("d.M.yyyy");
         QString currentTime = date.time().toString("HH:mm:ss");
         QString header = "\t\t Dziennik zdarzeń programu ScannerPC\t" + currentTime + "\t\t" + currentDate + "\n\n"+
@@ -173,9 +143,16 @@ void MainWindow::messageHandling        (MessageType type, QString what, QString
     if(type == MessageType::criticalError || type == MessageType::warning)
         showMessageOnStatusBar(what);
 
-
 }
 void MainWindow::showMessageOnStatusBar (QString what)
 {
     ui->statusBar->showMessage(what, 3000);
+}
+
+void MainWindow::on_actionLoad_image_triggered()
+{
+    QString imagesSetPath = QFileDialog::getExistingDirectory(this, "Load set of images", QDir::currentPath(), QFileDialog::ShowDirsOnly);
+
+    if( !imagesSetPath.isEmpty() )
+        photogrammetryReconstructor.reconstructFromImages(imagesSetPath);
 }

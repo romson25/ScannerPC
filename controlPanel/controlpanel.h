@@ -9,7 +9,6 @@
 #include "DataProcessor/instruction.h"
 #include "DataProcessor/messagetype.h"
 #include "Connection/connectionstatus.h"
-#include "scanningmode.h"
 
 namespace Ui {
 class ControlPanel;
@@ -33,7 +32,6 @@ signals:
 
     void scanningStarted        ();
     void scanningFinished       ();
-    void scanningModeChanged    (ScanningMode);
     void motorStepsNumberChanged(float);
     void tableAngleChanged      (float);
     void message                (MessageType, QString, QString = "ControlPanel");
@@ -50,7 +48,6 @@ private slots:
     void on_photosSlider_valueChanged           (int value);
     void on_reconnectWithUsb_clicked            ();
     void on_start_stop_clicked                  ();
-    void on_scanningMethod_currentIndexChanged  (int index);
 
 private:
     Ui::ControlPanel *ui;

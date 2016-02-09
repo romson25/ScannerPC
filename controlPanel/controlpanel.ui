@@ -101,7 +101,7 @@
      </item>
     </layout>
    </item>
-   <item row="10" column="0">
+   <item row="9" column="0">
     <spacer name="verticalSpacer_5">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -117,7 +117,7 @@
      </property>
     </spacer>
    </item>
-   <item row="11" column="0">
+   <item row="10" column="0">
     <layout class="QGridLayout" name="startAndStop">
      <item row="0" column="0">
       <widget class="QPushButton" name="start_stop">
@@ -349,7 +349,7 @@
      </item>
     </layout>
    </item>
-   <item row="12" column="0">
+   <item row="11" column="0">
     <spacer name="verticalSpacer_6">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -364,20 +364,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="9" column="0">
-    <widget class="QComboBox" name="scanningMethod">
-     <item>
-      <property name="text">
-       <string>Laser</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Photogrammetry</string>
-      </property>
-     </item>
-    </widget>
    </item>
   </layout>
  </widget>

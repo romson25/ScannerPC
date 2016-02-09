@@ -65,11 +65,7 @@ void ReconstructorBase::saveCloud   (QString path)
     file.flush();
     file.close();
 }
-void ReconstructorBase::setAngle    (float angle)
-{
-    sinAngle = qSin( qDegreesToRadians(angle) );
-    cosAngle = qCos( qDegreesToRadians(angle) );
-}
+
 void ReconstructorBase::setData     (aiMesh *mesh)
 {
     if(!mesh->HasPositions() || !mesh->HasNormals())

@@ -63,10 +63,6 @@ void ControlPanel::on_start_stop_clicked                ()
     else
         scanningControler(Instruction::endScanning);
 }
-void ControlPanel::on_scanningMethod_currentIndexChanged(int index)
-{
-    emit scanningModeChanged( index ? ScanningMode::photogrammetry : ScanningMode::laser );
-}
 
 void ControlPanel::prepareForStartScanning  ()
 {
@@ -113,21 +109,19 @@ void ControlPanel::setGui                   (GuiMode mode)
     {
         bool b{true};
         ui->photosSlider  ->setDisabled(b);
-        ui->scanningMethod->setDisabled(b);
     }
     else if(mode == GuiMode::afterScanning)
     {
         bool b{phoneReady && arduinoReady};
-        ui->start_stop->setText("Start");
-        ui->start_stop      ->setEnabled(b);
-        ui->photosSlider    ->setEnabled(b);
-        ui->scanningMethod  ->setEnabled(b);
+        ui->start_stop  ->setText("Start");
+        ui->start_stop  ->setEnabled(b);
+        ui->photosSlider->setEnabled(b);
 
         ui->reconnectWithUsb  ->setDisabled(arduinoReady);
     }
 
-    ui->arduinoStatusLabel->setText(connectedToQString(arduinoReady));
-    ui->phoneStatusLabel->setText(connectedToQString(phoneReady));
+    ui->arduinoStatusLabel  ->setText(connectedToQString(arduinoReady));
+    ui->phoneStatusLabel    ->setText(connectedToQString(phoneReady));
 }
 QString ControlPanel::connectedToQString    (bool isConnected)
 {
